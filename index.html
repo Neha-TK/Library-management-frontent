@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="number"] {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background: #2575fc;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #1b5fd9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .search-results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Library Management System</h1>
+
+        <!-- Add Book Form -->
+        <h2>Add Book Details</h2>
+        <form id="add-book-form">
+            <input type="text" id="ano" placeholder="Accession Number" required>
+            <input type="text" id="title" placeholder="Title" required>
+            <input type="text" id="author" placeholder="Author" required>
+            <input type="number" id="edition" placeholder="Edition" required>
+            <input type="text" id="publisher" placeholder="Publisher" required>
+            <button type="submit">Add Book</button>
+        </form>
+
+        <!-- Search Books Form -->
+        <h2>Search Books</h2>
+        <form id="search-book-form">
+            <input type="text" id="search-title" placeholder="Search by Title">
+            <button type="submit">Search</button>
+        </form>
+
+        <!-- Search Results -->
+        <div class="search-results">
+            <h2>Search Results</h2>
+            <table id="search-results-table">
+                <thead>
+                    <tr>
+                        <th>Accession Number</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Edition</th>
+                        <th>Publisher</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Search results will be displayed here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Function to save books to local storage
+        function saveBooks(books) {
+            localStorage.setItem('libraryBooks', JSON.stringify(books));
+        }
+
+        // Function to load books from local storage
+        function loadBooks() {
+            const books = localStorage.getItem('libraryBooks');
+            return books ? JSON.parse(books) : [];
+        }
+
+        // Add Book Form Submission
+        document.getElementById('add-book-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const ano = document.getElementById('ano').value;
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const edition = document.getElementById('edition').value;
+            const publisher = document.getElementById('publisher').value;
+
+            const book = { ano, title, author, edition, publisher };
+
+            const books = loadBooks();
+            books.push(book);
+            saveBooks(books);
+
+            alert('Book added successfully!');
+            document.getElementById('add-book-form').reset();
+        });
+
+        // Search Book Form Submission
+        document.getElementById('search-book-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const searchTitle = document.getElementById('search-title').value.toLowerCase();
+            const books = loadBooks();
+
+            const filteredBooks = books.filter(book => book.title.toLowerCase().includes(searchTitle));
+
+            const resultsTable = document.getElementById('search-results-table').getElementsByTagName('tbody')[0];
+            resultsTable.innerHTML = '';
+
+            if (filteredBooks.length > 0) {
+                filteredBooks.forEach(book => {
+                    const row = resultsTable.insertRow();
+                    row.insertCell().textContent = book.ano;
+                    row.insertCell().textContent = book.title;
+                    row.insertCell().textContent = book.author;
+                    row.insertCell().textContent = book.edition;
+                    row.insertCell().textContent = book.publisher;
+                });
+            } else {
+                resultsTable.innerHTML = '<tr><td colspan="5">No books found</td></tr>';
+            }
+        });
+    </script>
+</body>
+</html>
